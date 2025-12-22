@@ -1,1 +1,26 @@
+local URLBase = "https://raw.githubusercontent.com/pandarepo/repo/refs/heads/main"
 
+for _, folder in { "pandahub", "pandahub/games", "pandahub/libs", "pandahub/data" } do
+	if not isfolder(folder) then
+		makefolder(folder)
+	end
+end
+
+local Data = loadstring(game:HttpGet(URLBase .. "/data/libs.lua"))()
+local LocalData = isfile("pandahub/data/libs.lua") and loadstring(readfile("pandahub/data/libs.lua"))() or {}
+
+local LocalVersions = {}
+for _, lib in ipairs(LocalData) do
+	LocalVersions[lib.Name] = lib.Version
+end
+
+for _, lib in ipairs(Data) do
+	local path = "pandahub/libs/" .. lib.Name .. ".lua"
+	if LocalVersions[lib.Name] ~= lib.Version or not isfile(path) then
+		writefile(path, game:HttpGet(URLBase .. "/libs/" .. lib.Name .. ".lua"))
+	end
+end
+
+writefile("pandahub/data/libs.lua", game:HttpGet(URLBase .. "/data/libs.lua"))
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/pandarepo/repo/refs/heads/main/games/counterblox.lua"))()
